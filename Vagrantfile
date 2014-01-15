@@ -5,12 +5,14 @@
 VAGRANTFILE_API_VERSION = "2"
 
 $script = <<SCRIPT
-apt-get -y install unzip libncurses5-dev git
+apt-get -y update && apt-get -y upgrade
+
+apt-get -y install unzip libncurses5-dev git aufs-tools
 
 mkdir -p /home/vagrant/buildroot{,.local}
 chown vagrant.vagrant /home/vagrant/buildroot{,.local}
 
-echo "none  /home/vagrant/buildroot overlayfs user,noatime,upperdir=/home/vagrant/buildroot.local,lowerdir=/vagrant 0 0" >> /etc/fstab
+echo "none  /home/vagrant/buildroot aufs  user,exec,udba=reval,create=tdp,sum,br:/home/vagrant/buildroot.local=rw:/vagrant=ro 0 0" | tee -a /etc/fstab
 mount /home/vagrant/buildroot
 
 SCRIPT
@@ -22,11 +24,11 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   # please see the online documentation at vagrantup.com.
 
   # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "ubuntu-daily"
+  config.vm.box = "precise-daily"
 
   # The url from where the 'config.vm.box' box will be fetched if it
   # doesn't already exist on the user's system.
-  config.vm.box_url = "http://cloud-images.ubuntu.com/vagrant/raring/current/raring-server-cloudimg-i386-vagrant-disk1.box"
+  config.vm.box_url = "http://cloud-images.ubuntu.com/vagrant/precise/current/precise-server-cloudimg-i386-vagrant-disk1.box"
 
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
